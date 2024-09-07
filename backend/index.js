@@ -1,3 +1,14 @@
 const express = require("express");
-//mongodb+srv://admin:VbmCBFTByiVJGAUl@cluster0.rkvlplz.mongodb.net/
+const cors = require("cors");
 
+
+const app = express();
+
+const rootRouter = require("./routes/index");
+app.use(cors());
+app.use(express.json());
+
+
+app.use("/api/v1", rootRouter);
+
+app.listen(3000);
