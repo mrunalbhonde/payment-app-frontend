@@ -1,7 +1,5 @@
 const express = require("express");
 const zod = require("zod");
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = require("../config");
 const {Account} = require("../db");
 const  { authMiddleware } = require("../middleware");
 const { default: mongoose } = require("mongoose");
@@ -14,7 +12,7 @@ const accountequest = zod.object({
     amount: zod.number(),
 })
 
-router.get("balance", authMiddleware, async (req,res)=>{
+router.get("/balance", authMiddleware, async (req,res)=>{
     const account = await Account.findOne({
         userId: req.userId
     });
@@ -24,7 +22,7 @@ router.get("balance", authMiddleware, async (req,res)=>{
     })
 })
 
-router.post("transfer", authMiddleware, async (req, res)=>{
+router.post("/transfer", authMiddleware, async (req, res)=>{
     const session = await mongoose.startSession();
     session.startTransaction();
 
