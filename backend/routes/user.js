@@ -1,6 +1,6 @@
 const express = require("express");
 const zod = require("zod");
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
 const  { authMiddleware } = require("../middleware");
@@ -8,8 +8,7 @@ const  { authMiddleware } = require("../middleware");
 const router = express.Router();
 const app = express();
 
-// import userMiddleware from "./middleware/userMiddleware"
-
+//requests schemas for zod
 const signupSchema = zod.object({
     username: zod.string().email(),
     firstName: zod.string(),
@@ -28,7 +27,7 @@ const updateSchema = zod.object({
     password: zod.string().optional(),
 });
 
-app.post("/signup", async(req,res)=>{
+router.post("/signup", async(req,res)=>{
     const body = req.body;
     //we made schema as object so no need to separately take out username password etc
     const {success} = signupSchema.safeParse(body);
@@ -57,6 +56,10 @@ app.post("/signup", async(req,res)=>{
     })
     
     const userId = user._id;
+    await Account.create({
+        userId,
+        balance: 1 + Math.random() * 10000
+    })
     const token = jwt.sign({userId}, JWT_SECRET);
     
     res.status(200).json({
@@ -65,7 +68,7 @@ app.post("/signup", async(req,res)=>{
     });
 });
 
-app.post("/signin", async(req,res)=>{
+router.post("/signin", authMiddleware, async(req,res)=>{
     const body = req.body;
 
     const success = signinSchema.safeParse(body);
@@ -94,7 +97,7 @@ app.post("/signin", async(req,res)=>{
     }
 })
 
-app.put("/", async (req, authMiddleware, res) => {
+router.put("/", authMiddleware, async (req, res) => {
     const body = req.body;
     const {success} = updateSchema.safeParse(body);
 
@@ -112,8 +115,8 @@ app.put("/", async (req, authMiddleware, res) => {
 
 })
 
-app.get("/bulk", async(req,res)=>{
-    const filter = req.query.filter;
+router.get("/bulk", async(req,res)=>{
+    const filter = req.query.filter || "";
 
     const users = await User.find({
         $or: [{
