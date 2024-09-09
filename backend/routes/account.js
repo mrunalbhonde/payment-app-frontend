@@ -20,7 +20,7 @@ router.post("/transfer", authMiddleware, async (req, res) => {
 
     session.startTransaction();
     const { amount, to } = req.body;
-    console.log(req.body, amount, to);
+
     // Fetch the accounts within the transaction
     const account = await Account.findOne({ userId: req.userId }).session(session);
 
@@ -32,7 +32,6 @@ router.post("/transfer", authMiddleware, async (req, res) => {
     }
 
     const toAccount = await Account.findOne({ userId: to }).session(session);
-    console.log(toAccount);
 
     if (!toAccount) {
         await session.abortTransaction();
