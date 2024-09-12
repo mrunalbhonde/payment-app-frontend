@@ -32,6 +32,7 @@ export const Users = () => {
 }
 
 function User({user}) {
+    //shift to history instead of useNavigate
     const navigate = useNavigate();
 
     return <div className="flex justify-between">
