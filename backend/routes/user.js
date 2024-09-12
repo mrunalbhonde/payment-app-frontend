@@ -68,7 +68,7 @@ router.post("/signup", async(req,res)=>{
     });
 });
 
-router.post("/signin", authMiddleware, async(req,res)=>{
+router.post("/signin", async(req,res)=>{
     const body = req.body;
 
     const success = signinSchema.safeParse(body);
